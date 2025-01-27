@@ -1,36 +1,79 @@
-alert('Hola Alura One');
-// Variables
-let numeroMaximoPosible = 100;
-let numeroSecreto = Math.floor(Math.random() * numeroMaximoPosible) + 1;
-let numeroUsuario = 0;
-let intentos = 1;
-// let palabraVeces = 'vez';
-let maximosIntentos = 3;
+let numeroSecreto = 0;
+let intentos = 0;
+let listaNumerosSorteados = [];
+let numeroMaximo = 10;
 
-console.log(numeroSecreto);
+function asignarTextoElemento(elemento, texto) {
+    let elementoHTML = document.querySelector(elemento);
+    elementoHTML.innerHTML = texto;
+    return;
+};
 
-while (numeroUsuario != numeroSecreto) {
-    numeroUsuario = parseInt(prompt(`Me indicas un número entre 1 y ${numeroMaximoPosible} por favor: `));
+function verificarIntento() {
+    let numeroDeUsuario = parseInt(document.getElementById('valorUsuario').value);
     
-    console.log(typeof(numeroUsuario));
-    if (numeroUsuario == numeroSecreto) {
-        //Acertamos, fue verdadera la condición
-        alert(`Acertaste el numero es: ${numeroUsuario}. Lo hiciste en ${intentos} ${intentos == 1 ? 'vez' : 'veces' }`);
+    if (numeroDeUsuario === numeroSecreto) {
+        asignarTextoElemento('p', `Acertaste el número, en ${intentos} ${(intentos === 1) ? 'vez' : 'veces'} `);
+        document.getElementById('reiniciar').removeAttribute('disabled'); // Se uso para Activar y reiniciar el juego
+        pararIntento(); // Se usa para llamar la funcion pararIntento
     } else {
-        if (numeroUsuario > numeroSecreto) { 
-            alert('El número secreto es menor.');
+        // El usuario no acerto
+        if (numeroDeUsuario > numeroSecreto) {
+            asignarTextoElemento('p', 'El número secreto es menor');
         } else {
-            alert('El número secreto es mayor.');
-        }
-        // Incrementamos el contador cuando no acierta
-        // intentos = intentos + 1;
-        // intentos += 1;
+            asignarTextoElemento('p', 'El número secreto es mayor')
+        };
         intentos++;
+        limpiarCaja();
+    };
+    return;
+};
 
-        // palabraVeces = 'veces';
-        if (intentos > maximosIntentos) {
-            alert(`Llegaste al número máximo de ${maximosIntentos} intentos`);
-            break;
+function limpiarCaja() {
+    document.querySelector('#valorUsuario').value = ''; // Se usa para llamar el id y dejar el campo limpio
+};
+
+function generarNumeroSecreto() {
+    let numeroGenerado = Math.floor(Math.random() * numeroMaximo) + 1; // Genera el número secreto aleatorio
+    
+    console.log(numeroGenerado);
+    console.log(listaNumerosSorteados);
+    // Si ya sorteamos todos los números
+    if (listaNumerosSorteados.length == numeroMaximo) {
+        asignarTextoElemento('p', 'Ya se sorteron todos los números posibles.') // Muestra un mensaje si ya todos los numeros fueron sorteados
+    } else {
+         // Si el número esta incluido en la lista
+         if (listaNumerosSorteados.includes(numeroGenerado)) {
+            return generarNumeroSecreto();
+        } else {
+            listaNumerosSorteados.push(numeroGenerado);
+            return numeroGenerado;
         }
-    }
-}
+    };
+};
+
+function condicionesIniciales() {
+    asignarTextoElemento('h1', 'Juego del número secreto!');
+    asignarTextoElemento('p', `Indica un número del 1 al ${numeroMaximo}`);
+    numeroSecreto = generarNumeroSecreto();
+    intentos = 1;
+};
+
+function reiniciarJuego() {
+    // Limpiar caja
+    limpiarCaja();
+    // Indicar mensaje de intervalo de números
+    // Generar el número aleatorio
+    // Inicializar el números de intentos
+    condicionesIniciales();
+     // Deshabilitar el botón de nuevo juego
+     document.querySelector('#reiniciar').setAttribute('disabled', 'true'); // Activa el botón de reinciar juego
+     // Deshabilitar el botón de intento
+     document.querySelector('#intentar').removeAttribute('disabled', 'true'); // desactiva el botón de intento
+};
+
+function pararIntento() {
+    document.querySelector('#intentar').setAttribute('disabled', 'true'); // Se uso para activar el botón de intento
+};
+
+condicionesIniciales();
